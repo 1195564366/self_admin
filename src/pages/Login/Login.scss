@@ -1,0 +1,41 @@
+.login-container {
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(
+    to bottom right,
+    #5eb5e0,
+    #7766f3
+  ); /* 标准的语法（必须放在最后） */
+  .main-container {
+    width: 1000px;
+    height: 500px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    box-shadow:  0 0 10px #888;
+    .left-container {
+      flex: 3;
+      background: linear-gradient(
+        to bottom right,
+        #5eb5e0,
+        #7766f3
+      ); /* 标准的语法（必须放在最后） */
+    }
+    .right-container {
+      background: #fff;
+      flex: 2;
+      padding: 50px 30px;
+      .title {
+        font-size: 25px;
+        color: #31ABF4;
+        margin-bottom: 30px;
+      }
+      .login-form-button {
+        margin-top: 50px;
+        width: 100%;
+      }
+    }
+  }
+}

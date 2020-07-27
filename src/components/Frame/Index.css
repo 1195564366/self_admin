@@ -1,0 +1,32 @@
+.ant-layout {
+  height: 100vh;
+}
+#components-layout-demo-custom-trigger .trigger {
+  font-size: 18px;
+  line-height: 64px;
+  padding: 0 24px;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+
+#components-layout-demo-custom-trigger .trigger:hover {
+  color: #1890ff;
+}
+
+.ant-layout-sider-children .logo {
+  height: 32px;
+  text-align: center;
+  margin: 16px;
+}
+.ant-layout-sider-children .logo img {
+  height: 32px;
+}
+.site-layout .site-layout-background {
+  background: #fff;
+}
+
+.user-info-container {
+  float: right;
+  margin-right: 50px;
+  cursor: pointer;
+}
