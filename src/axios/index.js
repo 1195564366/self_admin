@@ -1,8 +1,12 @@
 import axios from 'axios'
 import { Cache } from '@utils'
+import { message } from 'antd'
 // const service = axios.create({
 
 // })
+message.config({
+  maxCount: 1
+})
 axios.interceptors.request.use(function (config) {
   // 在发送请求之前做些什么
   config.headers['access-token'] = Cache.get('pddUserInfo') ? Cache.get('pddUserInfo').token : null
@@ -34,6 +38,9 @@ export const fetchGet = (url, data) => {
 export const fetchPost = (url, data) => {
   return new Promise(async (resolve, reject) => {
     axios.post(url, data).then(res => {
+      if (res.code !== 200) {
+        message.error(res.msg)
+      }
       resolve(res)
     }).catch(err => {
       reject(err)
