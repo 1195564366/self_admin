@@ -1,17 +1,19 @@
 import React, { useState, useEffect } from 'react'
-import { Button, Table, Space, Modal, Form, Input, InputNumber, message, Empty, Drawer } from 'antd'
+import { Button, Table, Space, Modal, Form, Input, InputNumber, message, Empty, Drawer, Dropdown, Menu } from 'antd'
 import { PlusCircleOutlined } from '@ant-design/icons'
-export default function VideoSourse() {
-  const [ courseForm ] = Form.useForm()
-  const [ courseShow, setcourseShow ] = useState(false)
-  const [ courseList, setCourseList ] = useState([])
-  const [ courseLoading, setCourseLoading ] = useState(false)
+import './VideoSourse.scss'
 
-  const [ catalogId, setCatalogId ] = useState(null)
-  const [ catalogList, setCatalogList ] = useState([])
-  const [ catalogForm ] = Form.useForm()
-  const [ drawerShow, setDrawerShow] = useState(false)
-  const [ catalogShow, setCatalogShow ] = useState(false)
+export default function VideoSourse() {
+  const [courseForm] = Form.useForm()
+  const [courseShow, setcourseShow] = useState(false)
+  const [courseList, setCourseList] = useState([])
+  const [courseLoading, setCourseLoading] = useState(false)
+
+  const [chapterId, setChapterId] = useState(null)
+  const [chapterList, setChapterList] = useState([])
+  const [chapterForm] = Form.useForm()
+  const [drawerShow, setDrawerShow] = useState(false)
+  const [chapterShow, setChapterShow] = useState(false)
   useEffect(() => {
     getCourseList()
   }, [])
@@ -29,11 +31,11 @@ export default function VideoSourse() {
 
   // 查看课程目录
   const ViewClick = async record => {
-    setCatalogId(record.id)
+    setChapterId(record.id)
     const result = await React.$fetchGet('/admin/chapter/list', {
       cid: record.id
     })
-    setCatalogList(result.data)
+    setChapterList(result.data)
     setDrawerShow(true)
   }
   // 新增/编辑 确认
@@ -52,17 +54,17 @@ export default function VideoSourse() {
   }
 
   // 章节 新增/编辑 确认
-  const catalogSubmit = async () => {
+  const chapterSubmit = async () => {
     try {
-      const values = await catalogForm.validateFields();
-      const result = await React.$fetchPost('/admin/chapter/add', {...values, ...{cid: catalogId}})
+      const values = await chapterForm.validateFields();
+      const result = await React.$fetchPost('/admin/chapter/add', { ...values, ...{ cid: chapterId } })
       if (result.code !== 200) return
       message.success('课程章节新增成功')
-      catalogForm.resetFields()
+      chapterForm.resetFields()
       ViewClick({
-        id: catalogId
+        id: chapterId
       })
-      setCatalogShow(false)
+      setChapterShow(false)
       // getCourseList()
     } catch (errorInfo) {
       console.log('Failed:', errorInfo);
@@ -81,23 +83,23 @@ export default function VideoSourse() {
     key: 'action',
     render: (text, record) => (
       <Space size="middle">
-        <Button type="primary" onClick={ () => {
+        <Button type="primary" onClick={() => {
           ViewClick(record)
-        } }>查看</Button>
+        }}>查看</Button>
         <Button type="ghost">编辑</Button>
         <Button type="danger">删除</Button>
       </Space>
     )
   }]
   return (
-    <div>
+    <div className="video-sourse-wrapper">
       <div style={{ textAlign: 'right', marginRight: '30px', marginBottom: '30px' }}>
-        <Button 
+        <Button
           type="primary"
           icon={<PlusCircleOutlined />}
-          onClick={ () => {
+          onClick={() => {
             setcourseShow(true)
-          } }
+          }}
         >添加课程</Button>
       </div>
       <Table
@@ -106,7 +108,7 @@ export default function VideoSourse() {
         locale={{
           emptyText: () => {
             return (
-              <Empty description="暂无课程"/>
+              <Empty description="暂无课程" />
             )
           }
         }}
@@ -124,7 +126,7 @@ export default function VideoSourse() {
           setcourseShow(false)
         }}
       >
-        <Form form={ courseForm } layout="vertical">
+        <Form form={courseForm} layout="vertical">
           <Form.Item name="name" label="课程名称" rules={[{ required: true, message: '请输入课程名称' }]}>
             <Input maxLength={50} />
           </Form.Item>
@@ -139,6 +141,7 @@ export default function VideoSourse() {
         onClose={() => {
           setDrawerShow(false)
         }}
+        getContainer={false}
         width={500}
         visible={drawerShow}
         footer={
@@ -148,29 +151,65 @@ export default function VideoSourse() {
             }}
           >
             <Button type="primary" onClick={() => {
-              setCatalogShow(true)
+              setChapterShow(true)
             }}>
               新增章节
             </Button>
           </div>
         }
       >
-        { catalogList.map(item => {
-          return <div key={item.id}>{ item.name }</div>
+        {chapterList.map((item, index) => {
+          console.log(document.querySelector(`.chapter-item-${item.id}`))
+          return <div key={item.id} className={'chapter-item ' + 'chapter-item-' + item.id}>
+            <Dropdown 
+              getPopupContainer={() => document.querySelector(`.chapter-item-${item.id}`)}
+              placement="bottomLeft"
+              overlay={
+                <Menu>
+                  <Menu.Item>
+                    <Button type="link">
+                      添加
+                    </Button>
+                  </Menu.Item>
+                  <Menu.Item>
+                    <Button type="link" style={{
+                      color: '#575757'
+                    }}>
+                      编辑
+                    </Button>
+                  </Menu.Item>
+                  <Menu.Item>
+                    <Button type="link" style={{
+                      color: '#FF4D4F'
+                    }}>
+                      删除
+                    </Button>
+                  </Menu.Item>
+                </Menu>
+              }>
+              <h3>
+                第{index + 1}章 {item.name}
+              </h3>
+            </Dropdown>
+            
+            <div className="desc">
+              {item.intr}
+            </div>
+          </div>
         })}
       </Drawer>
       {/* 新增/编辑章节弹窗 */}
       <Modal
         title="添加章节"
-        visible={catalogShow}
+        visible={chapterShow}
         onOk={() => {
-          catalogSubmit()
+          chapterSubmit()
         }}
         onCancel={() => {
-          setCatalogShow(false)
+          setChapterShow(false)
         }}
       >
-        <Form form={ catalogForm } layout="vertical">
+        <Form form={chapterForm} layout="vertical">
           <Form.Item name="name" label="章节名称" rules={[{ required: true, message: '请输入章节名称' }]}>
             <Input maxLength={50} />
           </Form.Item>
